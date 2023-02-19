@@ -55,29 +55,31 @@ export default function TextForm(props) {
   };
 
   const Capitalize = () => {
-    const newText = text
-      .split(" ")
-      .map((el) => {
-        return el[0].toUpperCase() + el.slice(1);
-      })
-      .join(" ");
+    const newText =
+      text &&
+      text
+        .split(" ")
+        .map((el) => el.charAt(0).toUpperCase() + el.slice(1))
+        .join(" ");
     setText(newText);
     props.showAlert("Text capitalized!", "Success");
   };
 
   const TitleCase = () => {
-    const newText = text
-      .split(" ")
-      .map((el) => {
-        if (
-          eliminate.find((currEl) => {
-            if (currEl.toLowerCase() === el.toLowerCase()) return currEl;
-          })
-        )
-          return el.toLowerCase();
-        return el[0].toUpperCase() + el.slice(1);
-      })
-      .join(" ");
+    const newText =
+      text &&
+      text
+        .split(" ")
+        .map((el) => {
+          if (
+            eliminate.find((currEl) => {
+              if (currEl.toLowerCase() === el.toLowerCase()) return currEl;
+            })
+          )
+            return el.toLowerCase();
+          return el.charAt(0).toUpperCase() + el.slice(1);
+        })
+        .join(" ");
     setText(newText);
     props.showAlert("Text converted to title case!", "Success");
   };
@@ -86,6 +88,7 @@ export default function TextForm(props) {
     const copyText = document.getElementById("textBox");
     copyText.select();
     document.execCommand("copy");
+    document.getSelection().removeAllRanges();
     props.showAlert("Text copied!", "Success");
   };
 
@@ -107,88 +110,118 @@ export default function TextForm(props) {
 
   return (
     <>
-      <div
-        className={`container my-5 text-${
-          props.mode === "light" ? "#000000" : "light"
-        }`}
-      >
-        <h1>{props.heading}</h1>
-        <div className="mb-3 ">
-          <textarea
-            placeholder="Enter Text Here"
-            className="form-control"
-            value={text}
-            onChange={handleOnChange}
-            id="textBox"
-            rows="10"
-          ></textarea>
+      <div>
+        <div
+          className={`container my-5 text-${
+            props.mode === "light" ? "#000000" : "light"
+          }`}
+        >
+          <h1>{props.heading}</h1>
+          <div className="mb-3 ">
+            <textarea
+              placeholder="Enter Text Here"
+              className="form-control"
+              value={text}
+              onChange={handleOnChange}
+              id="textBox"
+              rows="10"
+            ></textarea>
+          </div>
+
+          <button
+            type="button"
+            disabled={text.trim().length === 0}
+            onClick={UpCase}
+            className={`btn btn-primary mx-1`}
+          >
+            Upper Case
+          </button>
+
+          <button
+            type="button"
+            disabled={text.trim().length === 0}
+            onClick={LoCase}
+            className={`btn btn-primary mx-1`}
+          >
+            Lower Case
+          </button>
+
+          <button
+            type="button"
+            disabled={text.trim().length === 0}
+            onClick={Capitalize}
+            className={`btn btn-primary mx-1`}
+          >
+            Capitalisation
+          </button>
+
+          <button
+            type="button"
+            disabled={text.trim().length === 0}
+            onClick={TitleCase}
+            className={`btn btn-primary mx-1`}
+          >
+            Title Case
+          </button>
+
+          <button
+            type="button"
+            disabled={text.trim().length === 0}
+            onClick={RemoveExtraSpaces}
+            className={`btn btn-primary mx-1`}
+          >
+            Remove Extra Spaces
+          </button>
+
+          <button
+            type="button"
+            disabled={text.trim().length === 0}
+            onClick={CopyText}
+            className={`btn btn-primary mx-1`}
+          >
+            Copy Text
+          </button>
+
+          <button
+            type="button"
+            disabled={text.trim().length === 0}
+            onClick={Clear}
+            className={`btn btn-primary mx-1`}
+          >
+            Clear
+          </button>
         </div>
-
-        <button type="button" onClick={UpCase} className="btn btn-primary mx-1">
-          Upper Case
-        </button>
-
-        <button type="button" onClick={LoCase} className="btn btn-primary mx-1">
-          Lower Case
-        </button>
-
-        <button
-          type="button"
-          onClick={Capitalize}
-          className="btn btn-primary mx-1"
+        <div
+          className={`container my-3 text-${
+            props.mode === "light" ? "#000000" : "light"
+          }`}
         >
-          Capitalisation
-        </button>
-
-        <button
-          type="button"
-          onClick={TitleCase}
-          className="btn btn-primary mx-1"
-        >
-          Title Case
-        </button>
-
-        <button
-          type="button"
-          onClick={RemoveExtraSpaces}
-          className="btn btn-primary mx-1"
-        >
-          Remove Extra Spaces
-        </button>
-
-        <button
-          type="button"
-          onClick={CopyText}
-          className="btn btn-primary mx-1"
-        >
-          Copy Text
-        </button>
-
-        <button type="button" onClick={Clear} className="btn btn-primary mx-1">
-          Clear
-        </button>
-      </div>
-      <div
-        className={`container my-3 text-${
-          props.mode === "light" ? "#000000" : "light"
-        }`}
-      >
-        <h2>Your text summary</h2>
-        <p>
-          {text.trim().length === 0 ? 0 : text.trim().split(" ").length} words
-          and {text.length} characters
-        </p>
-        <p>{0.008 * 60 * text.split(" ").length} Second read</p>
-        <h2>Preview</h2>
-        {show ? (
-          <p className="" id="preview">
-            {text}
+          <h2>Your text summary</h2>
+          <p>
+            {text.trim().length === 0 ? 0 : text.trim().split(" ").length} words
+            and {text.trim().length} characters
           </p>
-        ) : null}
+          <p>
+            {text.trim().length === 0
+              ? 0
+              : (0.008 * 60 * text.trim().split(" ").length).toFixed(2)}{" "}
+            second read
+          </p>
+          <h2>Preview</h2>
+          {show ? (
+            <p className="" id="preview">
+              {text}
+            </p>
+          ) : null}
 
-        <button className="btn btn-primary" onClick={showPreview}>
-          Show Preview
-        </button>
+          <button
+            className={`btn btn-primary mx-1`}
+            disabled={text.trim().length === 0}
+            onClick={showPreview}
+          >
+            Show Preview
+          </button>
+        </div>
       </div>
     </>
   );
